@@ -1,0 +1,653 @@
+```html
+<!DOCTYPE html>
+<html lang="so">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Som City RP - Admin Interview</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    
+    <!-- Custom Theme Configuration to match the Logo -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        somOrange: '#f97316', // Orange 500
+                        somYellow: '#eab308', // Yellow 500
+                        somBlue: '#0284c7',   // Sky 600
+                        somDark: '#0b1120',   // Deep dark blue/black
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #0b1120; /* Matches logo background */
+            color: #e2e8f0; 
+        }
+        
+        .bg-glass {
+            background-color: rgba(15, 23, 42, 0.7); 
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(249, 115, 22, 0.15); /* Subtle orange border */
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .animate-fade-in {
+            animation: fadeIn 0.4s ease-out forwards;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0b1120; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #f97316; 
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #ea580c; 
+        }
+
+        /* Hidden Lock Icon */
+        .secret-lock {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            color: #1e293b; /* Very dark, blends with background */
+            cursor: pointer;
+            z-index: 50;
+            padding: 8px;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+        .secret-lock:hover {
+            color: #f97316; /* somOrange on hover */
+            background-color: rgba(30, 41, 59, 0.5);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col relative overflow-x-hidden selection:bg-somOrange selection:text-white">
+
+    <!-- Background Ambient Effects (Matching Logo Colors: Orange & Blue) -->
+    <div class="fixed top-0 left-0 w-full h-full overflow-hidden z-[-1] pointer-events-none">
+        <div class="absolute top-[-10%] left-[-10%] w-96 h-96 bg-somBlue rounded-full mix-blend-screen filter blur-[150px] opacity-20"></div>
+        <div class="absolute bottom-[-10%] right-[-10%] w-96 h-96 bg-somOrange rounded-full mix-blend-screen filter blur-[150px] opacity-20"></div>
+    </div>
+
+    <!-- Header -->
+    <header class="relative z-10 border-b border-somOrange/20 bg-somDark/80 backdrop-blur-md shadow-lg shadow-somOrange/5">
+        <div class="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center gap-3 cursor-pointer" onclick="showView('registration')">
+                <!-- Logo Inserted Here -->
+                <img src="https://i.ibb.co/mCYz2Ldm/1403977749747732592-1.png" alt="Som City Logo" class="h-12 w-auto object-contain drop-shadow-[0_0_8px_rgba(249,115,22,0.5)]">
+                <div>
+                    <h1 class="text-xl font-black tracking-wider text-white">SOM CITY<span class="text-somOrange"> RP</span></h1>
+                    <p class="text-xs text-somYellow uppercase tracking-widest font-semibold">Admin Portal</p>
+                </div>
+            </div>
+            <div id="userInfoHeader" class="hidden text-sm text-slate-400 bg-slate-800/50 px-4 py-2 rounded-full border border-slate-700">
+                <span id="displayUserName" class="font-medium text-somOrange"></span> 
+                <span class="text-slate-500 mx-1">|</span>
+                <span id="displayUserId" class="text-slate-300"></span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="flex-grow flex items-center justify-center p-4 relative z-10 py-10">
+
+        <!-- VIEW: REGISTRATION -->
+        <div id="view-registration" class="max-w-md w-full bg-glass rounded-3xl p-8 md:p-10 shadow-2xl shadow-somOrange/10 animate-fade-in">
+            <div class="flex justify-center mb-6">
+                <img src="https://i.ibb.co/mCYz2Ldm/1403977749747732592-1.png" alt="Logo" class="h-24 object-contain animate-pulse">
+            </div>
+            <h2 class="text-2xl font-bold text-white text-center mb-2">Is-Diiwaangeli</h2>
+            <p class="text-slate-400 text-center mb-8 text-sm">Fadlan geli magacaaga iyo ID-gaaga si aad u bilowdo wareysiga Guddiga Maamulka.</p>
+            
+            <form id="registrationForm" onsubmit="handleRegistration(event)">
+                <div class="mb-5">
+                    <label for="userName" class="block text-sm font-medium text-slate-300 mb-2">Magacaaga (Discord/RP Name)</label>
+                    <input type="text" id="userName" required
+                        class="w-full bg-somDark/80 border border-slate-700 text-white rounded-xl px-4 py-3 focus:outline-none focus:border-somOrange focus:ring-1 focus:ring-somOrange transition-all placeholder-slate-600 shadow-inner"
+                        placeholder="Tusaale: Cali Jameeco">
+                </div>
+                <div class="mb-8">
+                    <label for="userId" class="block text-sm font-medium text-slate-300 mb-2">ID-gaaga (Discord ID ama Game ID)</label>
+                    <input type="text" id="userId" required
+                        class="w-full bg-somDark/80 border border-slate-700 text-white rounded-xl px-4 py-3 focus:outline-none focus:border-somOrange focus:ring-1 focus:ring-somOrange transition-all placeholder-slate-600 shadow-inner"
+                        placeholder="Tusaale: 123456789">
+                </div>
+                <button type="submit"
+                    class="w-full py-4 bg-gradient-to-r from-somOrange to-somYellow hover:from-somOrange hover:to-orange-500 text-slate-900 font-black text-lg rounded-xl transition-all duration-300 shadow-lg shadow-somOrange/40 flex items-center justify-center gap-2 group">
+                    Sii Wad
+                    <i class="ph ph-arrow-right text-xl group-hover:translate-x-1 transition-transform"></i>
+                </button>
+            </form>
+        </div>
+
+        <!-- VIEW: WELCOME & ADVERTISEMENTS -->
+        <div id="view-welcome" class="hidden max-w-4xl w-full flex flex-col gap-6 animate-fade-in">
+            
+            <!-- Welcome Box -->
+            <div class="w-full bg-glass rounded-3xl p-8 md:p-12 text-center shadow-2xl border-t-4 border-t-somOrange">
+                <h2 class="text-3xl md:text-5xl font-extrabold text-white mb-4">
+                    Ku Soo Dhawow <br class="hidden md:block"/> 
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-somOrange to-somYellow drop-shadow-sm">
+                        Wareysiga Som City RP
+                    </span>
+                </h2>
+                <p class="text-slate-300 mb-6 text-lg leading-relaxed max-w-2xl mx-auto">
+                    Soo dhawoow <strong id="welcomeName" class="text-somYellow"></strong>. Waxaad u tartamaysaa booska maamulka. Halkan waxaan ku tijaabin doonaa aqoontaada Roleplay-ga, sharciyada server-ka, iyo qaabka aad u xalliso khilaafaadka ciyaartoyda.
+                </p>
+                <div class="bg-somDark/60 rounded-xl p-4 mb-8 text-sm text-slate-300 text-left flex gap-3 border border-somBlue/30 max-w-2xl mx-auto shadow-inner">
+                    <i class="ph ph-info text-2xl text-somBlue flex-shrink-0"></i>
+                    <p>Fadlan si taxaddar leh u akhri su'aal kasta. Natiijada aad keento ayaa go'aamin doonta in laguu ogolaado xilka Admin-ka.</p>
+                </div>
+                <button onclick="startInterview()"
+                    class="px-10 py-4 bg-gradient-to-r from-somOrange to-somYellow hover:scale-105 text-slate-900 font-black text-xl rounded-2xl transition-all duration-300 shadow-[0_0_20px_rgba(249,115,22,0.4)] flex items-center justify-center mx-auto gap-2 group">
+                    <i class="ph-fill ph-play-circle text-2xl"></i>
+                    Bilaab Wareysiga 
+                </button>
+            </div>
+
+            <!-- Server Features / Advertisements (Xayeysiin) -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <!-- Ad 1: VIP -->
+                <div class="bg-slate-900/80 border border-somYellow/30 rounded-2xl p-5 flex flex-col items-center text-center hover:-translate-y-1 transition-transform cursor-pointer relative overflow-hidden group">
+                    <div class="absolute top-0 left-0 w-full h-1 bg-somYellow"></div>
+                    <i class="ph-fill ph-crown text-4xl text-somYellow mb-3 group-hover:scale-110 transition-transform"></i>
+                    <h3 class="text-white font-bold mb-2">Som City VIP</h3>
+                    <p class="text-xs text-slate-400 mb-4">Iibso VIP Packages si aad u hesho baabuur qaali ah iyo guryo khaas ah.</p>
+                    <button class="mt-auto text-somYellow text-sm font-bold hover:underline">Eeg Liiska <i class="ph ph-arrow-right"></i></button>
+                </div>
+                <!-- Ad 2: Discord -->
+                <div class="bg-slate-900/80 border border-[#5865F2]/30 rounded-2xl p-5 flex flex-col items-center text-center hover:-translate-y-1 transition-transform cursor-pointer relative overflow-hidden group">
+                    <div class="absolute top-0 left-0 w-full h-1 bg-[#5865F2]"></div>
+                    <i class="ph-fill ph-discord-logo text-4xl text-[#5865F2] mb-3 group-hover:scale-110 transition-transform"></i>
+                    <h3 class="text-white font-bold mb-2">Discord Server</h3>
+                    <p class="text-xs text-slate-400 mb-4">Ku soo biir bulshadeena Discord si aad ula socoto warbixinada iyo Events-ka.</p>
+                    <button class="mt-auto text-[#5865F2] text-sm font-bold hover:underline">Ku Biir Hadda <i class="ph ph-arrow-right"></i></button>
+                </div>
+                <!-- Ad 3: PD & EMS -->
+                <div class="bg-slate-900/80 border border-somBlue/30 rounded-2xl p-5 flex flex-col items-center text-center hover:-translate-y-1 transition-transform cursor-pointer relative overflow-hidden group">
+                    <div class="absolute top-0 left-0 w-full h-1 bg-somBlue"></div>
+                    <i class="ph-fill ph-police-car text-4xl text-somBlue mb-3 group-hover:scale-110 transition-transform"></i>
+                    <h3 class="text-white font-bold mb-2">Shaqalooyinka (Jobs)</h3>
+                    <p class="text-xs text-slate-400 mb-4">Waan qaadaneynaa Boolis (PD) iyo Dhaqaatiir (EMS) cusub. Codso hadda!</p>
+                    <button class="mt-auto text-somBlue text-sm font-bold hover:underline">Codso Hadda <i class="ph ph-arrow-right"></i></button>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- VIEW: INTERVIEW -->
+        <div id="view-interview" class="hidden max-w-3xl w-full bg-glass border border-somOrange/20 rounded-3xl p-6 md:p-10 shadow-2xl">
+            <!-- Progress Bar -->
+            <div class="mb-8">
+                <div class="flex justify-between text-sm text-slate-300 mb-2 font-bold">
+                    <span id="questionCounter">Su'aasha 1 ee 5</span>
+                    <span id="progressText" class="text-somOrange">0% La dhameeyay</span>
+                </div>
+                <div class="w-full bg-somDark rounded-full h-3 border border-slate-700">
+                    <div id="progressBar" class="bg-gradient-to-r from-somOrange to-somYellow h-full rounded-full transition-all duration-500 ease-out shadow-[0_0_10px_rgba(249,115,22,0.8)]" style="width: 0%"></div>
+                </div>
+            </div>
+
+            <!-- Question -->
+            <h3 id="questionText" class="text-xl md:text-2xl font-bold text-white mb-8 leading-relaxed">
+                <!-- Question will be injected here -->
+            </h3>
+
+            <!-- Options -->
+            <div id="optionsContainer" class="space-y-4">
+                <!-- Options will be injected here -->
+            </div>
+        </div>
+
+        <!-- VIEW: RESULT -->
+        <div id="view-result" class="hidden max-w-2xl w-full bg-glass border border-white/10 rounded-3xl p-8 md:p-12 text-center shadow-2xl">
+            
+            <div id="resultIconContainer" class="w-28 h-28 mx-auto rounded-full flex items-center justify-center mb-6 shadow-xl">
+                <i id="resultIcon" class="text-6xl"></i>
+            </div>
+
+            <h2 class="text-4xl font-black text-white mb-2">Natiijada Wareysiga</h2>
+            <p class="text-slate-300 mb-8 text-lg">Waxaad heshay <span id="scoreDisplay" class="text-somYellow font-bold text-2xl"></span> ka mid ah <span id="totalQuestionsDisplay" class="text-white font-bold text-2xl"></span> su'aalood.</p>
+            
+            <div id="resultMessage" class="rounded-2xl p-6 mb-8 border backdrop-blur-sm">
+                <!-- Message will be injected here -->
+            </div>
+
+            <button onclick="resetApp()"
+                class="px-8 py-4 bg-somDark hover:bg-slate-800 text-white font-bold rounded-xl transition-colors border border-slate-700 flex items-center justify-center gap-2 mx-auto">
+                <i class="ph ph-arrow-u-up-left text-xl"></i>
+                Ku noqo Bogga Hore
+            </button>
+        </div>
+
+        <!-- VIEW: HIDDEN LOGIN (Owner Panel) -->
+        <div id="view-hidden_login" class="hidden max-w-md w-full bg-somDark border border-somOrange/50 rounded-3xl p-8 shadow-[0_0_30px_rgba(249,115,22,0.15)] relative overflow-hidden">
+            <!-- Background detail -->
+            <div class="absolute -top-10 -right-10 text-somOrange opacity-5">
+                <i class="ph-fill ph-lock-key text-[150px]"></i>
+            </div>
+
+            <div class="flex justify-center mb-6 relative z-10">
+                <div class="w-20 h-20 bg-somOrange/10 rounded-full flex items-center justify-center">
+                    <i class="ph-fill ph-shield-check text-5xl text-somOrange"></i>
+                </div>
+            </div>
+            <h2 class="text-2xl font-black text-white text-center mb-6 relative z-10">OWNER ACCESS ONLY</h2>
+            
+            <form onsubmit="handlePinSubmit(event)" class="relative z-10">
+                <div class="mb-6">
+                    <input type="password" id="pinInput" maxlength="4"
+                        class="w-full bg-slate-950 border-2 border-slate-800 text-center text-4xl tracking-[1em] text-somYellow font-bold rounded-xl py-4 focus:outline-none focus:border-somOrange transition-colors shadow-inner"
+                        placeholder="****" autofocus>
+                    <p id="loginError" class="hidden text-red-500 text-sm font-bold text-center mt-3 bg-red-500/10 py-2 rounded">PIN qaldan! Fadlan isku day markale.</p>
+                </div>
+                <div class="flex gap-4">
+                    <button type="button" onclick="showView('registration')"
+                        class="flex-1 py-4 bg-slate-800 text-slate-300 font-bold rounded-xl hover:bg-slate-700 transition">
+                        Cancel
+                    </button>
+                    <button type="submit"
+                        class="flex-1 py-4 bg-somOrange text-white font-bold rounded-xl hover:bg-orange-500 transition shadow-lg shadow-somOrange/30">
+                        Verify
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- VIEW: OWNER DASHBOARD -->
+        <div id="view-dashboard" class="hidden max-w-6xl w-full bg-somDark border border-slate-800 rounded-3xl shadow-2xl overflow-hidden flex flex-col md:flex-row h-[85vh]">
+            
+            <!-- Sidebar -->
+            <div class="w-full md:w-72 bg-[#060a13] border-r border-slate-800 p-6 flex flex-col">
+                <div class="flex flex-col items-center gap-3 mb-10 pb-6 border-b border-slate-800">
+                    <img src="https://i.ibb.co/mCYz2Ldm/1403977749747732592-1.png" alt="Logo" class="h-16 object-contain">
+                    <div class="text-somOrange font-black tracking-widest text-lg">OWNER PANEL</div>
+                </div>
+                
+                <nav class="flex-grow space-y-3">
+                    <a href="#" class="flex items-center gap-3 px-5 py-4 bg-somOrange/10 text-somOrange font-bold rounded-xl border border-somOrange/20">
+                        <i class="ph-fill ph-users text-2xl"></i>
+                        <span>Applicants History</span>
+                    </a>
+                    <a href="#" class="flex items-center gap-3 px-5 py-4 text-slate-400 hover:text-white hover:bg-slate-800 rounded-xl transition-colors font-medium">
+                        <i class="ph-fill ph-gear text-2xl"></i>
+                        <span>Settings (Coming Soon)</span>
+                    </a>
+                </nav>
+
+                <button onclick="logoutOwner()"
+                    class="mt-auto flex items-center justify-center gap-2 px-5 py-4 bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white font-bold rounded-xl transition-all border border-red-500/20 w-full group">
+                    <i class="ph ph-sign-out text-xl group-hover:-translate-x-1 transition-transform"></i>
+                    <span>Log Out</span>
+                </button>
+            </div>
+
+            <!-- Dashboard Content -->
+            <div class="flex-grow bg-somDark p-6 md:p-10 overflow-y-auto">
+                <div class="flex justify-between items-end mb-8 border-b border-slate-800 pb-4">
+                    <div>
+                        <h2 class="text-3xl font-black text-white">Xogta Dadka Imtixaanka Galay</h2>
+                        <p class="text-slate-400 text-sm mt-1">Halkan waxaad ka arkaysaa dhammaan dadkii is diiwaangeliyay.</p>
+                    </div>
+                    <button onclick="clearSubmissions()" class="px-4 py-2 bg-slate-800 hover:bg-red-500/20 hover:text-red-400 text-slate-300 rounded-lg text-sm transition-colors border border-slate-700 flex items-center gap-2">
+                        <i class="ph ph-trash"></i> Tirtir History
+                    </button>
+                </div>
+                
+                <div id="applicantsList" class="grid gap-4">
+                    <!-- Applicant cards will be injected here via JS -->
+                    <div class="text-slate-500 text-center py-16 bg-slate-900/50 rounded-2xl border border-dashed border-slate-700" id="noApplicantsMsg">
+                        <i class="ph ph-folder-open text-6xl text-slate-700 mb-4 block"></i>
+                        <p class="text-lg">No recent applicants found.</p>
+                        <p class="text-sm">Dadka is diiwaangeliya halkan ayey kasoo muuqan doonaan.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Secret Lock Icon (Bottom Right) -->
+    <i class="ph-fill ph-lock-key secret-lock text-xl" onclick="showView('hidden_login')" title="Owner Login"></i>
+
+    <!-- Footer -->
+    <footer id="footer" class="relative z-10 py-6 text-center text-slate-600 text-sm bg-somDark border-t border-slate-900">
+        <p>© <span id="currentYear"></span> Som City RP. All rights reserved.</p>
+    </footer>
+
+    <!-- JavaScript Logic -->
+    <script>
+        // --- XOGTA IYO STATE-KA ---
+        const questions = [
+            {
+                question: "Discord server-ka dhexdiisa, laba ciyaaryahan ayaa isku aflagaadeynaya Voice Channel. Waa maxay tallaabada ugu habboon ee aad qaadeyso?",
+                options: [
+                    { text: "Waan u hanjabayaa oo waan ka saarayaa server-ka labadoodaba markiiba.", correct: false },
+                    { text: "Waan 'Mute' gareynayaa labadooda, kadibna mid mid ayaan ula hadlayaa si aan u xaliyo khilaafka si xasiloon.", correct: true },
+                    { text: "Waan iska indha tirayaa, waayo waa iska caadi in la isku xanaaqo RP-ga.", correct: false },
+                    { text: "Midka aan saaxiibada nahay ayaan u xaglinayaa si uu u guuleysto.", correct: false }
+                ]
+            },
+            {
+                question: "Ciyaaryahan cusub (New Player) ayaa sameeyay VDM (Gawaari jiidid ula kac ah) isagoon si fiican u aqoon sharciga. Maxaad ka yeelaysaa?",
+                options: [
+                    { text: "Waan u yeerayaa (Bring), si degan ayaan sharciga ugu sharaxayaa, digniin afka ahna waan siinayaa (Verbal Warning).", correct: true },
+                    { text: "Ban rasmi ah (Permanent Ban) ayaan saarayaa markiiba si uusan ugu soo laaban.", correct: false },
+                    { text: "Jeelka ayaan dhigayaa 10 saacadood isagoon iila hadlin.", correct: false },
+                    { text: "Hubka iyo lacagta oo dhan ayaan ka qaadayaa ciqaab ahaan.", correct: false }
+                ]
+            },
+            {
+                question: "Haddii ciyaaryahan uu diido inuu Roleplay la sameeyo Booliska markii la qabtay (Fail RP / Combat Log). Waa maxay shaqadaada Admin ahaan?",
+                options: [
+                    { text: "Aniga laftayda ayaa booliska ka caawinaya inaan qabto oo aan toogto.", correct: false },
+                    { text: "Waan iska cafinayaa haddii uu raaligelin iga siiyo chat-ka.", correct: false },
+                    { text: "Wuxuu furayaa Ticket, waxaan daawanayaa caddaymaha (Clips), kadibna ciqaabta sharciga ku qoran ayaan marsiinayaa.", correct: true },
+                    { text: "Waan la murmayaa dhexdiisa game-ka si aan u cabsi geliyo.", correct: false }
+                ]
+            },
+            {
+                question: "Waxaad aragtay Admin kale oo awoodiisa si qaldan u isticmaalaya (Admin Abuse) sida inuu soo saarto lacag ama dadka iska dilayo. Maxaad samaynaysaa?",
+                options: [
+                    { text: "Qof walba ayaan u sheegayaa server-ka dhexdiisa oo waan ceebeynayaa.", correct: false },
+                    { text: "Caddaymo (Clips/Screenshots) ayaan si aamusan u duubayaa, waxaana si hoose ugu gudbinayaa Founders-ka/Owners-ka.", correct: true },
+                    { text: "Awooda/Ranks-ka ayaan aniga ka qaadayaa markiiba.", correct: false },
+                    { text: "Waan la shaqaysanayaa isaga si aan anigana wax uga faa'iido.", correct: false }
+                ]
+            },
+            {
+                question: "Ciyaaryahan ayaa u soo diray xubnaha kale Link Discord server kale ah (Advertising/DM Advertising). Ciqaabtiisu waa maxay Som City RP?",
+                options: [
+                    { text: "Mute 10 daqiiqo ah oo kaliya.", correct: false },
+                    { text: "Digniin kooban (Warn).", correct: false },
+                    { text: "Waan ku qoslayaa oo waxba kama qabanayo.", correct: false },
+                    { text: "Ban rasmi ah (Permanent Ban) maadaama xayeysiinta server-yo kale ay mamnuuc tahay.", correct: true }
+                ]
+            }
+        ];
+
+        let currentUser = { name: '', id: '' };
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let submissions = JSON.parse(localStorage.getItem('somCitySubmissions')) || [];
+
+        // Set Current Year in Footer
+        document.getElementById('currentYear').textContent = new Date().getFullYear();
+
+        // --- SHAQOOYINKA VIEW-GA ---
+        function hideAllViews() {
+            const views = ['registration', 'welcome', 'interview', 'result', 'hidden_login', 'dashboard'];
+            views.forEach(view => {
+                document.getElementById(`view-${view}`).classList.add('hidden');
+                document.getElementById(`view-${view}`).classList.remove('animate-fade-in');
+            });
+        }
+
+        function showView(viewName) {
+            hideAllViews();
+            const viewEl = document.getElementById(`view-${viewName}`);
+            viewEl.classList.remove('hidden');
+            // Trigger reflow for animation to restart
+            void viewEl.offsetWidth; 
+            viewEl.classList.add('animate-fade-in');
+
+            // Toggle Header User Info & Footer
+            const userInfo = document.getElementById('userInfoHeader');
+            const footer = document.getElementById('footer');
+            const secretLock = document.querySelector('.secret-lock');
+
+            if (viewName === 'dashboard') {
+                footer.classList.add('hidden');
+                secretLock.classList.add('hidden');
+            } else {
+                footer.classList.remove('hidden');
+                secretLock.classList.remove('hidden');
+            }
+
+            if (currentUser.name && viewName !== 'registration' && viewName !== 'hidden_login' && viewName !== 'dashboard') {
+                userInfo.classList.remove('hidden');
+            } else {
+                userInfo.classList.add('hidden');
+            }
+        }
+
+        // --- SHAQOOYINKA LOGIC-GA ---
+
+        function handleRegistration(e) {
+            e.preventDefault();
+            const nameInput = document.getElementById('userName').value.trim();
+            const idInput = document.getElementById('userId').value.trim();
+
+            if (nameInput && idInput) {
+                currentUser = { name: nameInput, id: idInput };
+                
+                // Update UI with user info
+                document.getElementById('welcomeName').textContent = currentUser.name;
+                document.getElementById('displayUserName').textContent = currentUser.name;
+                document.getElementById('displayUserId').textContent = currentUser.id;
+                
+                showView('welcome');
+            }
+        }
+
+        function startInterview() {
+            currentQuestionIndex = 0;
+            score = 0;
+            renderQuestion();
+            showView('interview');
+        }
+
+        function renderQuestion() {
+            const q = questions[currentQuestionIndex];
+            
+            // Update Progress
+            document.getElementById('questionCounter').textContent = `Su'aasha ${currentQuestionIndex + 1} ee ${questions.length}`;
+            const progressPercent = (currentQuestionIndex / questions.length) * 100;
+            document.getElementById('progressBar').style.width = `${progressPercent}%`;
+            document.getElementById('progressText').textContent = `${Math.round(progressPercent)}% La dhameeyay`;
+
+            // Render Text
+            document.getElementById('questionText').textContent = q.question;
+
+            // Render Options
+            const optionsContainer = document.getElementById('optionsContainer');
+            optionsContainer.innerHTML = '';
+
+            q.options.forEach((opt, index) => {
+                const btn = document.createElement('button');
+                btn.className = "w-full text-left p-5 rounded-2xl border border-slate-700 bg-[#0f172a] hover:bg-slate-800 hover:border-somOrange transition-all duration-200 group flex items-start gap-4 shadow-sm hover:shadow-md";
+                btn.onclick = () => handleAnswer(opt.correct);
+                
+                btn.innerHTML = `
+                    <div class="w-6 h-6 rounded-full border-2 border-slate-600 group-hover:border-somOrange flex items-center justify-center flex-shrink-0 mt-0.5 transition-colors">
+                        <div class="w-2.5 h-2.5 rounded-full bg-somOrange opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    </div>
+                    <span class="text-slate-200 text-[15px] leading-relaxed font-medium group-hover:text-white">${opt.text}</span>
+                `;
+                optionsContainer.appendChild(btn);
+            });
+        }
+
+        function handleAnswer(isCorrect) {
+            if (isCorrect) score++;
+
+            if (currentQuestionIndex < questions.length - 1) {
+                currentQuestionIndex++;
+                renderQuestion();
+            } else {
+                finishInterview();
+            }
+        }
+
+        function finishInterview() {
+            // Progress to 100%
+            document.getElementById('progressBar').style.width = `100%`;
+            document.getElementById('progressText').textContent = `100% La dhameeyay`;
+            
+            // Save submission for Owner Dashboard
+            const passed = score >= 4;
+            const newSubmission = {
+                name: currentUser.name,
+                id: currentUser.id,
+                score: score,
+                passed: passed,
+                date: new Date().toLocaleString()
+            };
+            submissions.unshift(newSubmission); // Add to beginning
+            localStorage.setItem('somCitySubmissions', JSON.stringify(submissions));
+
+            // Setup Result View
+            document.getElementById('scoreDisplay').textContent = score;
+            document.getElementById('totalQuestionsDisplay').textContent = questions.length;
+
+            const iconContainer = document.getElementById('resultIconContainer');
+            const icon = document.getElementById('resultIcon');
+            const messageDiv = document.getElementById('resultMessage');
+
+            if (passed) {
+                iconContainer.className = "w-28 h-28 mx-auto bg-green-500/20 rounded-full flex items-center justify-center mb-6 shadow-[0_0_30px_rgba(34,197,94,0.3)]";
+                icon.className = "ph-fill ph-check-circle text-7xl text-green-400";
+                
+                messageDiv.className = "bg-green-500/10 border border-green-500/30 rounded-2xl p-6 mb-8 text-green-300 shadow-inner";
+                messageDiv.innerHTML = `
+                    <h3 class="font-black text-xl mb-2 text-green-400">Hambalyo! Waa lagu aqbalay 🎉</h3>
+                    <p class="text-[15px]">Waxaad muujisay faham qoto dheer oo ku saabsan shuruucda Som City RP iyo qaabka Roleplay-ga. Fadlan Ticket ka fur Discord-ka si laguugu dhiibo Rank-gaaga Admin.</p>
+                `;
+            } else {
+                iconContainer.className = "w-28 h-28 mx-auto bg-red-500/20 rounded-full flex items-center justify-center mb-6 shadow-[0_0_30px_rgba(239,68,68,0.3)]";
+                icon.className = "ph-fill ph-x-circle text-7xl text-red-400";
+                
+                messageDiv.className = "bg-red-500/10 border border-red-500/30 rounded-2xl p-6 mb-8 text-red-300 shadow-inner";
+                messageDiv.innerHTML = `
+                    <h3 class="font-black text-xl mb-2 text-red-400">Nasiib Xumo, Waa lagugu diiday ❌</h3>
+                    <p class="text-[15px]">Aqoontaada shuruucda server-ka iyo Roleplay-ga kuma filna in lagu aamino awooda Admin-ka. Fadlan dib u akhri shuruucda oo isku soo day mar kale waqti kale.</p>
+                `;
+            }
+
+            setTimeout(() => {
+                showView('result');
+            }, 300);
+        }
+
+        function resetApp() {
+            // Reset form
+            document.getElementById('registrationForm').reset();
+            currentUser = { name: '', id: '' };
+            showView('registration');
+        }
+
+        // --- OWNER DASHBOARD LOGIC ---
+
+        function handlePinSubmit(e) {
+            e.preventDefault();
+            const pin = document.getElementById('pinInput').value;
+            const errorMsg = document.getElementById('loginError');
+
+            if (pin === '6661') {
+                errorMsg.classList.add('hidden');
+                document.getElementById('pinInput').value = '';
+                loadDashboardData();
+                showView('dashboard');
+            } else {
+                errorMsg.classList.remove('hidden');
+                document.getElementById('pinInput').value = '';
+            }
+        }
+
+        function logoutOwner() {
+            document.getElementById('pinInput').value = '';
+            document.getElementById('loginError').classList.add('hidden');
+            
+            if (currentUser.name) {
+                showView('welcome');
+            } else {
+                showView('registration');
+            }
+        }
+
+        function getInitials(name) {
+            return name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() || '?';
+        }
+
+        function loadDashboardData() {
+            const listContainer = document.getElementById('applicantsList');
+            const noMsg = document.getElementById('noApplicantsMsg');
+            
+            listContainer.innerHTML = '';
+
+            if (submissions.length === 0) {
+                listContainer.appendChild(noMsg);
+                noMsg.classList.remove('hidden');
+                return;
+            }
+
+            submissions.forEach(sub => {
+                const card = document.createElement('div');
+                card.className = "bg-slate-900 border border-slate-700 p-5 rounded-2xl flex items-center justify-between hover:border-somOrange/50 transition-colors";
+                
+                const statusColorClass = sub.passed ? 'text-green-400 bg-green-400/10' : 'text-red-400 bg-red-400/10';
+                const statusIcon = sub.passed ? 'ph-check-circle' : 'ph-x-circle';
+                const statusText = sub.passed ? 'PASSED' : 'FAILED';
+                const initials = getInitials(sub.name);
+
+                card.innerHTML = `
+                    <div class="flex items-center gap-5">
+                        <div class="w-12 h-12 bg-somOrange/20 border border-somOrange/30 rounded-full flex items-center justify-center text-somOrange font-black text-lg shrink-0">${initials}</div>
+                        <div>
+                            <h4 class="text-white font-bold text-lg">${sub.name}</h4>
+                            <div class="flex items-center gap-3 mt-1">
+                                <span class="text-xs font-mono bg-slate-800 px-2 py-1 rounded text-slate-300 border border-slate-700">ID: ${sub.id}</span>
+                                <span class="text-xs text-slate-500 flex items-center gap-1"><i class="ph ph-calendar-blank"></i> ${sub.date}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-6">
+                        <div class="text-right hidden sm:block">
+                            <div class="text-white font-bold text-lg border-b border-slate-700 pb-1 mb-1">Score: <span class="text-somYellow">${sub.score}/${questions.length}</span></div>
+                        </div>
+                        <div class="px-4 py-2 rounded-lg ${statusColorClass} font-black text-sm flex items-center gap-2 border border-current">
+                            <i class="ph-fill ${statusIcon} text-lg"></i>
+                            ${statusText}
+                        </div>
+                    </div>
+                `;
+                listContainer.appendChild(card);
+            });
+        }
+
+        function clearSubmissions() {
+            if(confirm("Ma hubtaa inaad tirtirto dhammaan diiwaanka (History)? Tallaabadan laguma noqon karo!")) {
+                submissions = [];
+                localStorage.removeItem('somCitySubmissions');
+                loadDashboardData();
+            }
+        }
+
+    </script>
+</body>
+</html>
+
+
+```
